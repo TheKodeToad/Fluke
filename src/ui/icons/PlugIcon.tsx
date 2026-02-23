@@ -25,8 +25,8 @@
  */  
 
 import { ReactElement } from "react";
-import { mappedRequire } from "../../webpack";
-import { lazyLoad, lazyProxy } from "../../lazy";
+import { mappedRequire } from "#webpack";
+import { lazyLoad, lazyProxy } from "#lazy";
 
 const IconBase = lazyProxy(() => mappedRequire("@phosphor-icons/react/dist/lib/IconBase.es.js").A);
 

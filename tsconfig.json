@@ -5,6 +5,9 @@
 		"strict": true,
 		"noImplicitAny": false,
 		"noUncheckedIndexedAccess": true,
-		"jsx": "preserve"
+		"jsx": "preserve",
+		"paths": {
+			"#*": ["./src/*"]
+		}
 	}
 }

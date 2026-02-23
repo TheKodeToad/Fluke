@@ -1,4 +1,4 @@
-import { Plugin } from "./plugin";
+import { Plugin } from "#plugin";
 
 export const plugins: Record<string, Plugin> = Object.create(null);
 

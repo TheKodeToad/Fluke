@@ -1,17 +1,18 @@
 export let wreq;
 export let React: typeof import("react");
 
-export const requireMap: Map<string, string> = new Map;
+export const reverseRequireMap: Map<string, string> = new Map;
 
 export function mappedRequire(id: string): any {
-	return wreq(requireMap.get(id) ?? id);
+	return wreq(reverseRequireMap.get(id) ?? id);
 }
 
 const nodeModulePattern = /^\.\.\/node_modules\/\.pnpm\/.+?\/node_modules\/(.+?)$/;
 
-function unmapID(id: string): string | null {
-	if (id.startsWith("./src/")) {
-		return "fluxer_app/" + id.substring("./src/".length);
+function mapID(id: string): string | null {
+	const srcPrefix = "./src/";
+	if (id.startsWith(srcPrefix)) {
+		return "fluxer_app/" + id.substring(srcPrefix.length);
 	}
 
 	const nodeModuleMatch = id.match(nodeModulePattern);
@@ -26,15 +27,19 @@ export function patchWebpack(require: any, modules: any, patchModule: (key: stri
 	wreq = require;
 
 	const addModule = (id: string, value: any) => {
-		const unmappedID = unmapID(id);
+		const mappedID = mapID(id);
 
-		if (unmappedID !== null) {
-			requireMap.set(unmappedID, id);
+		if (mappedID !== null) {
+			if (reverseRequireMap.has(mappedID)) {
+				console.warn(`Multiple modules mapped to '${mappedID}' - '${reverseRequireMap.get(mappedID)}' and '${id}' conflicting`);
+			} else {
+				reverseRequireMap.set(mappedID, id);
+			}
 		}
 
-		modules[id] = patchModule(unmappedID ?? id, value);
+		modules[id] = patchModule(mappedID ?? id, value);
 
-		if (unmappedID === "react/index.js") {
+		if (mappedID === "react/index.js") {
 			React = wreq(id);
 		}
 	};

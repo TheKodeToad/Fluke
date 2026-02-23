@@ -26,19 +26,20 @@
     React: () => React,
     mappedRequire: () => mappedRequire,
     patchWebpack: () => patchWebpack,
-    requireMap: () => requireMap,
+    reverseRequireMap: () => reverseRequireMap,
     wreq: () => wreq
   });
   var wreq;
   var React;
-  var requireMap = /* @__PURE__ */ new Map();
+  var reverseRequireMap = /* @__PURE__ */ new Map();
   function mappedRequire(id) {
-    return wreq(requireMap.get(id) ?? id);
+    return wreq(reverseRequireMap.get(id) ?? id);
   }
   var nodeModulePattern = /^\.\.\/node_modules\/\.pnpm\/.+?\/node_modules\/(.+?)$/;
-  function unmapID(id) {
-    if (id.startsWith("./src/")) {
-      return "fluxer_app/" + id.substring("./src/".length);
+  function mapID(id) {
+    const srcPrefix = "./src/";
+    if (id.startsWith(srcPrefix)) {
+      return "fluxer_app/" + id.substring(srcPrefix.length);
     }
     const nodeModuleMatch = id.match(nodeModulePattern);
     if (nodeModuleMatch !== null) {
@@ -49,12 +50,16 @@
   function patchWebpack(require2, modules, patchModule2) {
     wreq = require2;
     const addModule = (id, value) => {
-      const unmappedID = unmapID(id);
-      if (unmappedID !== null) {
-        requireMap.set(unmappedID, id);
+      const mappedID = mapID(id);
+      if (mappedID !== null) {
+        if (reverseRequireMap.has(mappedID)) {
+          console.warn(`Multiple modules mapped to '${mappedID}' - '${reverseRequireMap.get(mappedID)}' and '${id}' conflicting`);
+        } else {
+          reverseRequireMap.set(mappedID, id);
+        }
       }
-      modules[id] = patchModule2(unmappedID ?? id, value);
-      if (unmappedID === "react/index.js") {
+      modules[id] = patchModule2(mappedID ?? id, value);
+      if (mappedID === "react/index.js") {
         React = wreq(id);
       }
     };
@@ -76,6 +81,11 @@
   // src/plugin.ts
   function definePlugin(p) {
     return p;
+  }
+
+  // src/plugins/SettingsMenu/PluginsTab.tsx
+  function PluginsTab_default() {
+    return /* @__PURE__ */ fluke.webpack.React.createElement(fluke.webpack.React.Fragment, null, "hi");
   }
 
   // src/lazy.ts
@@ -172,22 +182,33 @@
     return /* @__PURE__ */ fluke.webpack.React.createElement(IconBase, { ...props, weights: weights() });
   }
 
-  // src/plugins/SettingsMenu.tsx
+  // src/plugins/SettingsMenu/index.ts
   var SettingsMenu_default = definePlugin({
     name: "SettingsMenu",
-    patches: [{
-      module: "fluxer_app/components/modals/utils/SettingsConstants.tsx",
-      replace: [
-        {
-          pattern: /{type:"developer_options",category:"staff_only"/,
-          replacement: "...$this.sections(),$&"
-        },
-        {
-          pattern: /(?<=function \i\(\i\)\{switch\(\i\)\{)case"user_settings"/,
-          replacement: "default:return $this.getCategoryName(arguments[0]);$&"
-        }
-      ]
-    }],
+    patches: [
+      {
+        module: "fluxer_app/components/modals/utils/SettingsConstants.tsx",
+        replace: [
+          {
+            pattern: /{type:"developer_options",category:"staff_only"/,
+            replacement: "...$this.sections(),$&"
+          },
+          {
+            pattern: /(?<=function \i\(\i\)\{switch\(\i\)\{)case"user_settings"/,
+            replacement: "default:return $this.categoryName(arguments[0]);$&"
+          }
+        ]
+      },
+      {
+        module: "fluxer_app/components/modals/UserSettingsModal.tsx",
+        replace: [
+          {
+            pattern: /(?<=(?<tabName>\i)=>\{var \i;return )null!=\(\i=\i\[\i\]\)\?\i:null/,
+            replacement: "$this.tabComponent($<tabName>);$&;"
+          }
+        ]
+      }
+    ],
     sections() {
       return [{
         type: "fluke_plugins",
@@ -196,7 +217,13 @@
         icon: PlugIcon_default
       }];
     },
-    getCategoryName(id) {
+    tabComponent(id) {
+      switch (id) {
+        case "fluke_plugins":
+          return PluginsTab_default;
+      }
+    },
+    categoryName(id) {
       switch (id) {
         case "fluke":
           return "Fluke";
@@ -224,7 +251,7 @@
       for (const replace of patch.replace) {
         const newSource = replace.pattern.source.replaceAll(
           "\\i",
-          "[A-Za-z$_][A-Za-z$_0-9]*"
+          "(?:[A-Za-z$_][A-Za-z$_0-9]*)"
         );
         replace.pattern = new RegExp(newSource, replace.pattern.flags);
         replace.replacement = replace.replacement.replaceAll(
@@ -237,21 +264,20 @@
   }
   function patchModule(key, value) {
     const modReplaces = replaceByModule.get(key);
-    if (!modReplaces) {
-      return value;
-    }
     let src = Function.prototype.toString.call(value);
-    for (const replace of modReplaces) {
-      let newSrc;
-      if (replace.pattern.flags.includes("g")) {
-        newSrc = src.replaceAll(replace.pattern, replace.replacement);
-      } else {
-        newSrc = src.replace(replace.pattern, replace.replacement);
-      }
-      if (src === newSrc) {
-        console.warn("Patch had no effect", replace);
-      } else {
-        src = newSrc;
+    if (modReplaces) {
+      for (const replace of modReplaces) {
+        let newSrc;
+        if (replace.pattern.flags.includes("g")) {
+          newSrc = src.replaceAll(replace.pattern, replace.replacement);
+        } else {
+          newSrc = src.replace(replace.pattern, replace.replacement);
+        }
+        if (src === newSrc) {
+          console.warn("Patch had no effect", replace);
+        } else {
+          src = newSrc;
+        }
       }
     }
     src = `//# sourceURL=file:///fluke_patched/${key}

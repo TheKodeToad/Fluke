@@ -1,9 +1,9 @@
-import * as pluginRegistry from "./plugin_registry";
-import * as webpack from "./webpack";
-import { PatchReplace } from "./plugin";
-import { registerPlugins } from "./plugins";
-import { patchWebpack } from "./webpack";
-import { plugins } from "./plugin_registry";
+import * as pluginRegistry from "#plugin_registry";
+import * as webpack from "#webpack";
+import { PatchReplace } from "#plugin";
+import { registerPlugins } from "#plugins";
+import { patchWebpack } from "#webpack";
+import { plugins } from "#plugin_registry";
 
 window["fluke"] = { pluginRegistry, webpack };
 
@@ -27,7 +27,7 @@ for (const name in plugins) {
 			// but I don't think we'll encounter those
 			const newSource = replace.pattern.source.replaceAll(
 				"\\i",
-				"[A-Za-z$_][A-Za-z$_0-9]*"
+				"(?:[A-Za-z$_][A-Za-z$_0-9]*)"
 			);
 			replace.pattern = new RegExp(newSource, replace.pattern.flags);
 
@@ -43,27 +43,27 @@ for (const name in plugins) {
 
 function patchModule(key: string, value: any): any {
 	const modReplaces = replaceByModule.get(key);
-	if (!modReplaces) {
-		return value;
-	}
 
 	let src = Function.prototype.toString.call(value);
 
-	for (const replace of modReplaces) {
-		let newSrc: string;
-		if (replace.pattern.flags.includes("g")) {
-			newSrc = src.replaceAll(replace.pattern, replace.replacement);
-		} else {
-			newSrc = src.replace(replace.pattern, replace.replacement);
-		}
+	if (modReplaces) {
+		for (const replace of modReplaces) {
+			let newSrc: string;
+			if (replace.pattern.flags.includes("g")) {
+				newSrc = src.replaceAll(replace.pattern, replace.replacement);
+			} else {
+				newSrc = src.replace(replace.pattern, replace.replacement);
+			}
 
-		if (src === newSrc) {
-			console.warn("Patch had no effect", replace);
-		} else {
-			src = newSrc;
+			if (src === newSrc) {
+				console.warn("Patch had no effect", replace);
+			} else {
+				src = newSrc;
+			}
 		}
 	}
 
+	// for now we are always doing this even with no patches because it makes dev easier
 	src = 
 		`//# sourceURL=file:///fluke_patched/${key}\n`
 		+ `0,${src}`; // NOTE: "0," is needed to have a floating unnamed function
