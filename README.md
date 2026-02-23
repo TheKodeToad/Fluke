@@ -11,3 +11,4 @@ The following repos helped work out how to hook things and stuff:
 - [Rinisky](https://github.com/rniii/rinisky)
 - [WebpackGrabber](https://github.com/Vendicated/WebpackGrabber)
 
+FIXME: it literally removes the csp right now !! this is stupid
