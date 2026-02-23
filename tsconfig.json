@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"moduleResolution": "bundler",
+		"strict": true,
+		"noImplicitAny": false,
+		"noUncheckedIndexedAccess": true,
+		"jsx": "preserve"
+	}
+}

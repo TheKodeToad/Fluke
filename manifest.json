@@ -1,0 +1,22 @@
+{
+	"name": "Fluke",
+	"description": "Fluxer Client Mod",
+	"version": "1.0",
+	"manifest_version": 3,
+	"permissions": ["declarativeNetRequest"],
+	"host_permissions": ["https://web.fluxer.app/*"],
+	"content_scripts": [{
+		"run_at": "document_start",
+		"js": ["scripts/content.js"],
+		"all_frames": true,
+		"matches": ["https://web.fluxer.app/*"],
+		"world": "MAIN"
+	}],
+	"declarative_net_request": {
+		"rule_resources": [{
+			"id": "remove_csp",
+			"enabled": true,
+			"path": "remove_csp.json"
+		}]
+	}
+}
