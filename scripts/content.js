@@ -135,15 +135,15 @@
     return p;
   }
 
-  // src/plugins/Test.ts
-  var Test_default = definePlugin({
-    name: "Test",
-    description: "A test plugin",
+  // src/plugins/NoReplyPing.ts
+  var NoReplyPing_default = definePlugin({
+    name: "NoReplyPing",
+    description: "Disable ping on reply by default.",
     patches: [{
-      module: "fluxer_app/index.tsx",
+      module: "fluxer_app/components/channel/MessageActionUtils.tsx",
       replace: [{
-        pattern: /"Fluxer"/,
-        replacement: '"Fluke Skywalker"'
+        pattern: /let (?<shouldMention>\i)=null!=\(\i=null==\i\?void 0:\i\.mention\).{0,50}?;/,
+        replacement: "$&$<shouldMention>=!$<shouldMention>;"
       }]
     }]
   });
@@ -338,7 +338,7 @@
   // src/plugins/index.ts
   function registerPlugins() {
     registerPlugin(SettingsMenu_default);
-    registerPlugin(Test_default);
+    registerPlugin(NoReplyPing_default);
   }
 
   // src/loader.ts

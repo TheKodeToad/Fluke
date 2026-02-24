@@ -2,7 +2,7 @@ import { lazyProxy } from "#lazy";
 import { Plugin } from "#plugin";
 import { isPluginEnabled, plugins, saveEnabledPlugins, setPluginEnabled } from "#plugin_registry";
 import { mappedRequire, React } from "#webpack";
-import { FunctionComponent, useReducer } from "react";
+import { FunctionComponent } from "react";
 
 const Switch: FunctionComponent<any> = lazyProxy(() => Object.values<any>(mappedRequire("fluxer_app/components/form/Switch.tsx"))[0]);
 

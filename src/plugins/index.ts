@@ -1,8 +1,8 @@
 import { registerPlugin } from "#plugin_registry";
-import Test from "#plugins/Test";
+import NoReplyPing from "#plugins/NoReplyPing";
 import SettingsMenu from "./SettingsMenu";
 
 export function registerPlugins() {
 	registerPlugin(SettingsMenu);
-	registerPlugin(Test);
+	registerPlugin(NoReplyPing);
 }
