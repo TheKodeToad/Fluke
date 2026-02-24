@@ -4,6 +4,8 @@ import PlugIcon from "#ui/icons/PlugIcon";
 
 export default definePlugin({
 	name: "SettingsMenu",
+	description: "Adds Fluke settings to Fluxer.",
+	forceEnable: true,
 	patches: [
 		{
 			module: "fluxer_app/components/modals/utils/SettingsConstants.tsx",
@@ -23,7 +25,7 @@ export default definePlugin({
 			replace: [
 				{
 					pattern: /(?<=(?<tabName>\i)=>\{var \i;return )null!=\(\i=\i\[\i\]\)\?\i:null/, 
-					replacement: "$this.tabComponent($<tabName>);$&;"
+					replacement: "$this.tabComponent($<tabName>)??($&);"
 				}
 			]
 		},

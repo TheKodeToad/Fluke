@@ -3,16 +3,21 @@ import * as webpack from "#webpack";
 import { PatchReplace } from "#plugin";
 import { registerPlugins } from "#plugins";
 import { patchWebpack } from "#webpack";
-import { plugins } from "#plugin_registry";
+import { isPluginEnabled, plugins, restoreEnabledPlugins } from "#plugin_registry";
 
-window["fluke"] = { pluginRegistry, webpack };
+window["Fluke"] = { pluginRegistry, webpack };
 
 registerPlugins();
+restoreEnabledPlugins();
 
 const replaceByModule: Map<string, PatchReplace[]> = new Map;
 
 for (const name in plugins) {
 	const plugin = plugins[name]!;
+
+	if (!isPluginEnabled(plugin)) {
+		continue;
+	}
 
 	for (const patch of plugin.patches) {
 		let modEntry = replaceByModule.get(patch.module);
@@ -33,7 +38,7 @@ for (const name in plugins) {
 
 			replace.replacement = replace.replacement.replaceAll(
 				"$this",
-				"fluke.pluginRegistry.plugins[" + JSON.stringify(plugin.name) + "]"
+				"Fluke.pluginRegistry.plugins[" + JSON.stringify(plugin.name) + "]"
 			);
 		}
 

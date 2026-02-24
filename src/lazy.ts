@@ -12,47 +12,64 @@ export function lazyLoad<T>(load: () => T): () => T {
 }
 
 export function lazyProxy<T>(load: () => T): T {
-	const target: () => any = lazyLoad(load);
+	const target = {};
+	const lazyValue = (): any => {
+		if ("value" in target) {
+			return target.value;
+		} else {
+			const result = load();
 
-	return new Proxy({}, {
+			if (result == null) {
+				throw new Error("load() returned nullish value");
+			}
+			if (typeof result !== "object") {
+				throw new Error("load() returned non-object value '${typeof result}'");
+			}
+
+			target["value"] = result;
+			return result;
+		}
+	};
+
+	return new Proxy(target, {
 		apply(_, thisArg, argArray) {
-			return Reflect.apply(target(), thisArg, argArray);
+			return Reflect.apply(lazyValue(), thisArg, argArray);
 		},
 		construct(_, argArray, newTarget) {
-			return Reflect.construct(target(), argArray, newTarget);
+			return Reflect.construct(lazyValue(), argArray, newTarget);
 		},
 		defineProperty(_, prop, attributes) {
-			return Reflect.defineProperty(target(), prop, attributes);
+			return Reflect.defineProperty(lazyValue(), prop, attributes);
 		},
 		deleteProperty(_, prop) {
-			return Reflect.deleteProperty(target(), prop);
+			return Reflect.deleteProperty(lazyValue(), prop);
 		},
 		get(_, prop) {
-			return Reflect.get(target(), prop);
+			return Reflect.get(lazyValue(), prop);
 		},
 		getOwnPropertyDescriptor(_, prop) {
-			return Reflect.getOwnPropertyDescriptor(target(), prop);
+			return Reflect.getOwnPropertyDescriptor(lazyValue(), prop);
 		},
 		getPrototypeOf() {
-			return Reflect.getPrototypeOf(target());
+			return Reflect.getPrototypeOf(lazyValue());
 		},
 		has(_, prop) {
-			return Reflect.has(target(), prop);
+			return Reflect.has(lazyValue(), prop);
 		},
 		isExtensible() {
-			return Reflect.isExtensible(target());
+			return Reflect.isExtensible(lazyValue());
 		},
 		ownKeys() {
-			return Reflect.ownKeys(target());
+			return Reflect.ownKeys(lazyValue());
 		},
 		preventExtensions() {
-			return Reflect.preventExtensions(target());
+			return Reflect.preventExtensions(lazyValue());
 		},
 		set(_, prop, newValue) {
-			return Reflect.set(target(), prop, newValue);
+			return Reflect.set(lazyValue(), prop, newValue);
 		},
 		setPrototypeOf(_, value) {
-			return Reflect.setPrototypeOf(target(), value);
+			return Reflect.setPrototypeOf(lazyValue(), value);
 		},
 	}) as T;
 }

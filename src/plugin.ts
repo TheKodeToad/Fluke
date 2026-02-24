@@ -1,5 +1,7 @@
 export interface Plugin {
 	name: string;
+	description: string;
+	forceEnable?: boolean;
 	patches: Patch[];
 }
 
