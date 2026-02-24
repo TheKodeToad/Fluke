@@ -7,7 +7,7 @@
 	"host_permissions": ["https://web.fluxer.app/*"],
 	"content_scripts": [{
 		"run_at": "document_start",
-		"js": ["scripts/content.js"],
+		"js": ["dist/fluke_renderer.js"],
 		"all_frames": true,
 		"matches": ["https://web.fluxer.app/*"],
 		"world": "MAIN"

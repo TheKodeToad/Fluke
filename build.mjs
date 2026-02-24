@@ -4,7 +4,8 @@ const dev = process.argv.includes("--dev");
 
 const ctx = await esbuild.context({
 	entryPoints: ["src/loader.ts"],
-	outfile: "scripts/content.js",
+	// no electron support but when that is added the distinction may be important
+	outfile: "dist/fluke_renderer.js",
 	bundle: true,
 	jsxFactory: "Fluke.webpack.React.createElement",
 	jsxFragment: "Fluke.webpack.React.Fragment",
