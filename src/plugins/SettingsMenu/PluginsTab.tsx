@@ -16,7 +16,7 @@ export function PluginComponent({ plugin }: { plugin: Plugin }) {
 	}
 
 	return <Switch
-		label={plugin.name}
+		label={name}
 		description={plugin.description}
 		disabled={plugin.forceEnable}
 		value={isPluginEnabled(plugin)}
