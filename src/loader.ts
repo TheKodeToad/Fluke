@@ -1,6 +1,6 @@
 import * as pluginRegistry from "#plugin_registry";
 import * as webpack from "#webpack";
-import { PatchReplace } from "#plugin";
+import { Patch, PatchReplace } from "#plugin";
 import { registerPlugins } from "#plugins";
 import { patchWebpack } from "#webpack";
 import { isPluginEnabled, plugins, restoreEnabledPlugins } from "#plugin_registry";
@@ -10,7 +10,7 @@ window["Fluke"] = { pluginRegistry, webpack };
 registerPlugins();
 restoreEnabledPlugins();
 
-const replaceByModule: Map<string, PatchReplace[]> = new Map;
+const pendingPatches: Patch[] = [];
 
 for (const name in plugins) {
 	const plugin = plugins[name]!;
@@ -20,11 +20,7 @@ for (const name in plugins) {
 	}
 
 	for (const patch of plugin.patches) {
-		let modEntry = replaceByModule.get(patch.module);
-		if (!modEntry) {
-			modEntry = [];
-			replaceByModule.set(patch.module, modEntry);
-		}
+		pendingPatches.push(patch);
 
 		for (const replace of patch.replace) {
 			// preprocess the pattern to allow \i to match JavaScript identifiers
@@ -41,18 +37,20 @@ for (const name in plugins) {
 				"Fluke.pluginRegistry.plugins[" + JSON.stringify(plugin.name) + "]"
 			);
 		}
-
-		modEntry.push(...patch.replace);
 	}
 }
 
 function patchModule(key: string, value: any): any {
-	const modReplaces = replaceByModule.get(key);
-
 	let src = Function.prototype.toString.call(value);
 
-	if (modReplaces) {
-		for (const replace of modReplaces) {
+	for (let i = 0; i < pendingPatches.length; ++i) {
+		const patch = pendingPatches[i]!;
+
+		if (!src.includes(patch.find)) {
+			continue;
+		}
+
+		for (const replace of patch.replace) {
 			let newSrc: string;
 			if (replace.pattern.flags.includes("g")) {
 				newSrc = src.replaceAll(replace.pattern, replace.replacement);
@@ -66,6 +64,9 @@ function patchModule(key: string, value: any): any {
 				src = newSrc;
 			}
 		}
+
+		pendingPatches.splice(i, 1);
+		--i;
 	}
 
 	// for now we are always doing this even with no patches because it makes dev easier

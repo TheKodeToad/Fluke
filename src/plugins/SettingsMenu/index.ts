@@ -8,7 +8,8 @@ export default definePlugin({
 	forceEnable: true,
 	patches: [
 		{
-			module: "fluxer_app/components/modals/utils/SettingsConstants.tsx",
+			// components/modals/utils/SettingsConstants.tsx
+			find: 'type:"theme",parentTab:"appearance",',
 			replace: [
 				{
 					pattern: /{type:"developer_options",category:"staff_only"/,
@@ -21,7 +22,8 @@ export default definePlugin({
 			]
 		},
 		{
-			module: "fluxer_app/components/modals/UserSettingsModal.tsx",
+			// components/modals/UserSettingsModal.tsx
+			find: '.subscribe("USER_SETTINGS_TAB_SELECT",',
 			replace: [
 				{
 					pattern: /(?<=(?<tabName>\i)=>\{var \i;return )null!=\(\i=\i\[\i\]\)\?\i:null/, 

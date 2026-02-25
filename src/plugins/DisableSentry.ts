@@ -6,7 +6,8 @@ export default definePlugin({
 	forceEnable: true,
 	patches: [
 		{
-			module: "fluxer_app/index.tsx",
+			// index.tsx
+			find: '.error("Failed to initialize runtime config:",',
 			replace: [{
 				pattern: /(?<=\i\.\i\(\{)dsn:/,
 				replacement: "enabled:false,$&"

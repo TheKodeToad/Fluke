@@ -6,7 +6,7 @@ export interface Plugin {
 }
 
 export interface Patch {
-	module: string;
+	find: string;
 	replace: PatchReplace[];
 }
 
