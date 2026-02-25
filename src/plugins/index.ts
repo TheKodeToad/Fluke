@@ -1,7 +1,7 @@
 import { registerPlugin } from "#plugin_registry";
 import DisableSentry from "#plugins/DisableSentry";
 import NoReplyPing from "#plugins/NoReplyPing";
-import SettingsMenu from "./SettingsMenu";
+import SettingsMenu from "#plugins/SettingsMenu";
 
 export function registerPlugins() {
 	registerPlugin(SettingsMenu);
