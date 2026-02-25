@@ -1,6 +1,7 @@
 import { lazyProxy } from "#lazy";
+import { isPluginEnabled, saveEnabledPlugins, setPluginEnabled } from "#loader";
 import { Plugin } from "#plugin";
-import { isPluginEnabled, plugins, saveEnabledPlugins, setPluginEnabled } from "#plugin_registry";
+import { plugins } from "#plugins";
 import { mappedRequire, React } from "#webpack";
 import { FunctionComponent } from "react";
 

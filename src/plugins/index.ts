@@ -1,10 +1,6 @@
-import { registerPlugin } from "#plugin_registry";
-import DisableSentry from "#plugins/DisableSentry";
-import NoReplyPing from "#plugins/NoReplyPing";
-import SettingsMenu from "#plugins/SettingsMenu";
+import { Plugin } from "#plugin";
 
-export function registerPlugins() {
-	registerPlugin(SettingsMenu);
-	registerPlugin(DisableSentry);
-	registerPlugin(NoReplyPing);
-}
+/** 
+ * Maps PluginName => Plugin object. Automatically generated at build time.
+ */
+export declare const plugins: Record<string, Plugin>;
