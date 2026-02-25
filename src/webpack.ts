@@ -1,10 +1,10 @@
-export let wreq;
+export let require;
 export let React: typeof import("react");
 
 export const reverseRequireMap: Map<string, string> = new Map;
 
 export function mappedRequire(id: string): any {
-	return wreq(reverseRequireMap.get(id) ?? id);
+	return require(reverseRequireMap.get(id) ?? id);
 }
 
 const nodeModulePattern = /^\.\.\/node_modules\/\.pnpm\/.+?\/node_modules\/(.+?)$/;
@@ -23,8 +23,8 @@ function mapID(id: string): string | null {
 	return null;
 }
 
-export function patchWebpack(require: any, modules: any, patchModule: (key: string, value: string) => string) {
-	wreq = require;
+export function patchWebpack(webpackRequire: any, modules: any, patchModule: (key: string, value: string) => string) {
+	require = webpackRequire;
 
 	const addModule = (id: string, value: any) => {
 		const mappedID = mapID(id);
@@ -40,7 +40,7 @@ export function patchWebpack(require: any, modules: any, patchModule: (key: stri
 		modules[id] = patchModule(mappedID ?? id, value);
 
 		if (mappedID === "react/index.js") {
-			React = wreq(id);
+			React = require(id);
 		}
 	};
 
