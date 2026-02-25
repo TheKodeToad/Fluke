@@ -2,9 +2,18 @@
 
 BetterFluxer real
 
-(badly implemented client-mod for the [latest discord knockoff](https://github.com/fluxerapp/fluxer))
+I made this because I thought it would be funny for some reason.
+I can't decide if this is a good idea or not, but the app is open-source so this does feel like an excessively challenging way to do things (even if you do want the flexibility of runtime patches there might be better ways).
 
-This isn't a very good approach as it's an open-source app which has all of the original symbol names public, but none of this is taken advantage of. It would probably be better just to fork the actual source code rather than patch the minified code at runtime lol
+Right now this is basically a proof-of-concept - and only a browser extension because it seemed like the easiest way to do this..
+
+No easy download for non-teccy users right now (it's really just an experiment), but if you have what it takes you just run:
+```
+pnpm build
+```
+then go to chrome://extensions and press Load Unpacked and select the repo folder.
+
+On Firefox, you can go to about:debugger, press This Firefox and press "Load Temporary Add-on" - this time select the manifest.json inside the folder though.
 
 The following repos helped work out how to hook things and stuff:
 - [Vencord](https://github.com/Vendicated/Vencord)

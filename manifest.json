@@ -3,7 +3,7 @@
 	"description": "Fluxer Client Mod",
 	"version": "1.0",
 	"manifest_version": 3,
-	"permissions": ["declarativeNetRequest"],
+	"permissions": ["declarativeNetRequestWithHostAccess"],
 	"host_permissions": ["https://web.fluxer.app/*"],
 	"content_scripts": [{
 		"run_at": "document_start",
