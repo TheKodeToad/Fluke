@@ -25,10 +25,10 @@
  */  
 
 import { ReactElement } from "react";
-import { mappedRequire } from "#webpack";
+import { libRequire } from "#webpack";
 import { lazyLoad, lazyProxy } from "#lazy";
 
-const IconBase = lazyProxy(() => mappedRequire("@phosphor-icons/react/dist/lib/IconBase.es.js").A);
+const IconBase = lazyProxy(() => libRequire("@phosphor-icons/react/dist/lib/IconBase.es.js").A);
 
 const weights: () => Map<string, ReactElement> = lazyLoad(() => new Map([
 	[

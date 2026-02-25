@@ -38,7 +38,7 @@ function flukeInit() {
 		}
 	}
 
-	const patchModule = (key: string, value: any): any => {
+	const patchModule = (key: string, value: any): Function => {
 		let src = Function.prototype.toString.call(value);
 
 		for (let i = 0; i < pendingPatches.length; ++i) {

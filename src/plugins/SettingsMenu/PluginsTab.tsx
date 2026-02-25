@@ -2,10 +2,10 @@ import { lazyProxy } from "#lazy";
 import { isPluginEnabled, saveEnabledPlugins, setPluginEnabled } from "#loader";
 import { Plugin } from "#plugin";
 import { plugins } from "#plugins";
-import { mappedRequire, React } from "#webpack";
+import { React, wpRequire } from "#webpack";
 import { FunctionComponent } from "react";
 
-const Switch: FunctionComponent<any> = lazyProxy(() => Object.values<any>(mappedRequire("fluxer_app/components/form/Switch.tsx"))[0]);
+const Switch: FunctionComponent<any> = lazyProxy(() => Object.values<any>(wpRequire("./src/components/form/Switch.tsx"))[0]);
 
 export function PluginComponent({ plugin }: { plugin: Plugin }) {
 	// FIXME: this is horrible

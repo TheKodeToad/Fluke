@@ -1,50 +1,49 @@
-export let require;
+export interface WebpackRequire {
+	(id: string): any;
+	m: Record<PropertyKey, Function>;
+}
+
+export let wpRequire: WebpackRequire;
 export let React: typeof import("react");
 
-export const reverseRequireMap: Map<string, string> = new Map;
+const libRequireMap: Map<string, string> = new Map;
 
-export function mappedRequire(id: string): any {
-	return require(reverseRequireMap.get(id) ?? id);
+/**
+ * Simplified import for libraries in node_modules - import with the ../node_modules/.pnpm/.../node_modules prefix stripped.
+ */
+export function libRequire(id: string): any {
+	return wpRequire(libRequireMap.get(id) ?? id);
 }
 
 const nodeModulePattern = /^\.\.\/node_modules\/\.pnpm\/.+?\/node_modules\/(.+?)$/;
 
-function mapID(id: string): string | null {
-	const srcPrefix = "./src/";
-	if (id.startsWith(srcPrefix)) {
-		return "fluxer_app/" + id.substring(srcPrefix.length);
-	}
-
+function mapLibID(id: string): string | null {
 	const nodeModuleMatch = id.match(nodeModulePattern);
-	if (nodeModuleMatch !== null) {
-		return nodeModuleMatch[1]!;
-	}
-
-	return null;
+	return nodeModuleMatch?.[1]! ?? null;
 }
 
-export function patchWebpack(webpackRequire: any, modules: any, patchModule: (key: string, value: string) => string) {
-	require = webpackRequire;
+export function patchWebpack(webpackRequire: any, modules: WebpackRequire["m"], patchModule: (key: string, value: string) => Function) {
+	wpRequire = webpackRequire;
 
 	const addModule = (id: string, value: any) => {
-		const mappedID = mapID(id);
+		const mappedID = mapLibID(id);
 
 		if (mappedID !== null) {
-			if (reverseRequireMap.has(mappedID)) {
-				console.warn(`Multiple modules mapped to '${mappedID}' - '${reverseRequireMap.get(mappedID)}' and '${id}' conflicting`);
+			if (libRequireMap.has(mappedID)) {
+				console.warn(`Multiple modules mapped to '${mappedID}' - '${libRequireMap.get(mappedID)}' and '${id}' conflicting`);
 			} else {
-				reverseRequireMap.set(mappedID, id);
+				libRequireMap.set(mappedID, id);
 			}
 		}
 
-		modules[id] = patchModule(mappedID ?? id, value);
+		modules[id] = patchModule(id, value);
 
 		if (mappedID === "react/index.js") {
-			React = require(id);
+			React = wpRequire(id);
 		}
 	};
 
-	require.m = new Proxy(modules, {
+	wpRequire.m = new Proxy(modules, {
 		set(_, id, newValue) {
 			if (typeof id !== "string") {
 				modules[id] = newValue;

@@ -1,10 +1,10 @@
 import { lazyProxy } from "#lazy";
 import { definePlugin } from "#plugin";
-import { mappedRequire } from "#webpack";
+import { wpRequire } from "#webpack";
 import { CSSProperties, ReactNode } from "react";
 
 const headerStyles = lazyProxy(() => {
-	const styles = mappedRequire("fluxer_app/components/bottomsheets/GuildHeaderBottomSheet.module.css");
+	const styles = wpRequire("./src/components/bottomsheets/GuildHeaderBottomSheet.module.css");
 	const findClassName = (name: string) => Object.values<string>(styles).find(x => x.includes("__" + name + "__"));
 
 	return {
@@ -16,8 +16,8 @@ const headerStyles = lazyProxy(() => {
 		statText: findClassName("statText"),
 	};
 });
-const GuildMemberStore = lazyProxy(() => mappedRequire("fluxer_app/stores/GuildMemberStore.tsx").A);
-const PresenceStore = lazyProxy(() => mappedRequire("fluxer_app/stores/PresenceStore.tsx").A);
+const GuildMemberStore = lazyProxy(() => wpRequire("./src/stores/GuildMemberStore.tsx").A);
+const PresenceStore = lazyProxy(() => wpRequire("./src/stores/PresenceStore.tsx").A);
 
 function LabelWrapper({ children, guild, guildNameDefault }: { children: ReactNode, guild: any, guildNameDefault: string }) {
 	const presenceCount = PresenceStore.getPresenceCount(guild.id);
