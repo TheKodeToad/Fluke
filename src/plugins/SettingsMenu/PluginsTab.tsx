@@ -1,11 +1,11 @@
-import { lazyProxy } from "#lazy";
+import { lazyComponent } from "#lazy";
 import { isPluginEnabled, saveEnabledPlugins, setPluginEnabled } from "#loader";
 import { Plugin } from "#plugin";
 import { plugins } from "#plugins";
 import { React, wpRequire } from "#webpack";
-import { FunctionComponent } from "react";
+import { ComponentType } from "react";
 
-const Switch: FunctionComponent<any> = lazyProxy(() => Object.values<any>(wpRequire("./src/components/form/Switch.tsx"))[0]);
+const Switch: ComponentType<any> = lazyComponent(() => Object.values<any>(wpRequire("./src/components/form/Switch.tsx"))[0]);
 
 export function PluginComponent({ plugin }: { plugin: Plugin }) {
 	// FIXME: this is horrible
