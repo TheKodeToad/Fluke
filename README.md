@@ -29,7 +29,7 @@ The following repos helped work out how to hook things and stuff:
 ## License
 ```
     Fluke - Fluxer Client Mod
-    Copyright (C) 2025 TheKodeToad
+    Copyright (C) 2026 TheKodeToad
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
