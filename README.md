@@ -2,6 +2,9 @@
 
 BetterFluxer real
 
+<img width="1191" height="902" alt="image" src="https://github.com/user-attachments/assets/fe9413ae-9ada-45f0-b071-24d32d0f9e89" />
+
+
 I made this because I thought it would be funny for some reason.
 I can't decide if this is a good idea or not, but the app is open-source so this does feel like an excessively challenging way to do things (even if you do want the flexibility of runtime patches there might be better ways).
 
