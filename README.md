@@ -13,14 +13,15 @@ pnpm build
 ```
 then go to chrome://extensions and press Load Unpacked and select the repo folder.
 
-On Firefox, you can go to about:debugger, press This Firefox and press "Load Temporary Add-on" - this time select the manifest.json inside the folder though.
+On Firefox, you can go to about:debugger, press This Firefox and press "Load Temporary Add-on" - this time select the manifest.json inside the folder though. Unsigned extensions don't persist after restart unfortunately :(
+
+Unfortunately this currently disables CSP which is not very secure :(
+Not sure if there's any good way around this with Manifest V3 extensions.
 
 The following repos helped work out how to hook things and stuff:
 - [Vencord](https://github.com/Vendicated/Vencord)
 - [Rinisky](https://github.com/rniii/rinisky)
 - [WebpackGrabber](https://github.com/Vendicated/WebpackGrabber)
-
-FIXME: it literally removes the csp right now !! this is stupid
 
 ## License
 ```
