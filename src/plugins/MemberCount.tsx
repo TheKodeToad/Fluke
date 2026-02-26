@@ -1,7 +1,7 @@
 import { lazyComponent, lazyLoad, lazyProxy } from "#lazy";
 import { definePlugin } from "#plugin";
 import { libRequire, wpRequire } from "#webpack";
-import { CSSProperties, ReactNode } from "react";
+import { ComponentType, CSSProperties, ReactNode } from "react";
 
 const headerStyles = lazyProxy(() => {
 	const styles = wpRequire("./src/components/bottomsheets/GuildHeaderBottomSheet.module.css");
@@ -18,7 +18,7 @@ const headerStyles = lazyProxy(() => {
 });
 const GuildMemberStore = lazyProxy(() => wpRequire("./src/stores/GuildMemberStore.tsx").A);
 const PresenceStore = lazyProxy(() => wpRequire("./src/stores/PresenceStore.tsx").A);
-const observer: Function = lazyProxy(() =>
+const observer: <P>(component: ComponentType<P>) => ComponentType<P> = lazyProxy(() =>
 	Object.values<any>(libRequire("mobx-react-lite/es/index.js"))
 		.find(x => typeof x === "function"
 			&& x.toString().includes("[mobx-react-lite] You are trying to use `observer` on a function component wrapped"))
