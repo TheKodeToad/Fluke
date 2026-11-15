@@ -20,6 +20,7 @@ On Firefox, you can go to about:debugger, press This Firefox and press "Load Tem
 
 Unfortunately this currently disables CSP which is not very secure :(
 Not sure if there's any good way around this with Manifest V3 extensions.
+Update: can't remember why I needed this but this might work: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/web_accessible_resources. This client mod probably doesn't work at all any more since I last updated it 9 months ago.
 
 The following repos helped work out how to hook things and stuff:
 - [Vencord](https://github.com/Vendicated/Vencord)
